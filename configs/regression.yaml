@@ -1,0 +1,14 @@
+dataset:
+  path: data/house_prices.csv
+  target: SalePrice
+
+split:
+  test_size: 0.2
+  random_state: 42
+
+model:
+  name: linear_regression
+
+preprocessing:
+  - impute
+  - scale 
