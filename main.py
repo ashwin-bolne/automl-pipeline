@@ -1,10 +1,12 @@
 import yaml
+import joblib
 
 from src.data_loader import (
     load_dataset, 
     get_features_and_target,
     split_dataset
 )
+from src.preprocessor import make_preprocessor
 
 
 def main():
@@ -31,22 +33,56 @@ def main():
         random_state=config["split"]["random_state"]
     )
 
+    preprocessor = make_preprocessor(
+        X_train,
+        config,
+    )
 
-    print("\nDataset Loaded successfully.")
+    X_train_processed = preprocessor.fit_transform(
+        X_train
+    )
 
-    print(f"\nDataset Shape: {df.shape}")
+    X_test_processed = preprocessor.transform(
+        X_test
+    )
 
-    print(f"\nFeature Matrix shape: {X.shape}")
+    print(
+        f"\nProcessed Train Shape: "
+        f"{X_train_processed.shape}"
+    )
 
-    print(f"\nTarget vector shape: {y.shape}")
+    print(
+        f"\nProcessed Test Shape: "
+        f"{X_test_processed.shape}"
+    )
+
+    joblib.dump(
+        preprocessor,
+        "models/preprocessor.joblib"
+    )
+
+    print(
+        "\nPreprocessor saved successfully."
+    )
+
+
+    # print("\nDataset Loaded successfully.")
+
+    # print(f"\nDataset Shape: {df.shape}")
+
+    # print(f"\nFeature Matrix shape: {X.shape}")
+
+    # print(f"\nTarget vector shape: {y.shape}")
     
-    print(f"\nTrain Feature shape: {X_train.shape}")
+    # print(f"\nTrain Feature shape: {X_train.shape}")
 
-    print(f"\nTest Feature shape: {X_test.shape}")
+    # print(f"\nTest Feature shape: {X_test.shape}")
 
-    print(f"\ny_train shape: {y_train.shape}")
+    # print(f"\ny_train shape: {y_train.shape}")
 
-    print(f"\ny_test shape: {y_test.shape}")
+    # print(f"\ny_test shape: {y_test.shape}")
+
+
 
 if __name__ == "__main__":
     main()
