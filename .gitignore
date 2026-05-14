@@ -10,6 +10,8 @@ venv/
 
 # MLflow
 mlruns/
+mlflow.db
+mlflow.db-journal
 
 # Models
 models/
