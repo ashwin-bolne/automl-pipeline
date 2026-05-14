@@ -2,6 +2,9 @@ dataset:
   path: data/house_prices.csv
   target: SalePrice
 
+task:
+  type: regression
+
 split:
   test_size: 0.2
   random_state: 42

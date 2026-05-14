@@ -7,7 +7,8 @@ from src.data_loader import (
     split_dataset
 )
 from src.preprocessor import make_preprocessor
-
+from src.trainer import train_model
+from src.evaluator import evaluate
 
 def main():
     """
@@ -17,7 +18,15 @@ def main():
     with open("configs/regression.yaml", "r") as file:
         config = yaml.safe_load(file)
 
+    model_name = config["model"]["name"]
+
+    task_type = config["task"]["type"]
+
     df = load_dataset(config)
+
+    # print("\nDataset Loaded successfully.")
+
+    # print(f"\nDataset Shape: {df.shape}")
 
     target_col = config["dataset"]["target"]
 
@@ -25,6 +34,11 @@ def main():
         df,
         target_col
     )
+    
+    # print(f"\nFeature Matrix shape: {X.shape}")
+
+    # print(f"\nTarget vector shape: {y.shape}")
+    
 
     X_train, X_test, y_train, y_test = split_dataset(
         X,
@@ -32,6 +46,14 @@ def main():
         test_size=config["split"]["test_size"],
         random_state=config["split"]["random_state"]
     )
+
+    # print(f"\nTrain Feature shape: {X_train.shape}")
+
+    # print(f"\nTest Feature shape: {X_test.shape}")
+
+    # print(f"\ny_train shape: {y_train.shape}")
+
+    # print(f"\ny_test shape: {y_test.shape}")
 
     preprocessor = make_preprocessor(
         X_train,
@@ -65,22 +87,33 @@ def main():
         "\nPreprocessor saved successfully."
     )
 
+    model = train_model(
+        model_name=model_name,
+        X_train=X_train_processed,
+        y_train=y_train,
+        config=config,
+    )
 
-    # print("\nDataset Loaded successfully.")
+    print(
+        f"\nModel trained successfully: "
+        f"{model_name}"
+    )
 
-    # print(f"\nDataset Shape: {df.shape}")
+    metrics = evaluate(
+    model=model,
+    X_test=X_test_processed,
+    y_test=y_test,
+    task_type=task_type,
+    )
 
-    # print(f"\nFeature Matrix shape: {X.shape}")
+    print("\nEvaluation Metrics")
+    print("-" * 40)
 
-    # print(f"\nTarget vector shape: {y.shape}")
-    
-    # print(f"\nTrain Feature shape: {X_train.shape}")
-
-    # print(f"\nTest Feature shape: {X_test.shape}")
-
-    # print(f"\ny_train shape: {y_train.shape}")
-
-    # print(f"\ny_test shape: {y_test.shape}")
+    for metric_name, metric_value in metrics.items():
+        print(
+            f"{metric_name}: "
+            f"{metric_value:.4f}"
+        )
 
 
 
